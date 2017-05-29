@@ -25,7 +25,7 @@ USAGE_STR = """
 """
 
 IMAGE_DIR = "/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled"
-ANNOTATION_FILE="/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images/joint_annotation_data.txt"
+ANNOTATION_FILE="/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled/joint_annotation_data_scaled.txt"
 
 
 xdim, ydim, zdim = 640, 480, 3
@@ -36,25 +36,31 @@ def get_data(num_train_pts, num_test_pts):
 		Parse annotation to map image.jpg file to 1 x 32 vector of all x,y joint coordinates
 		Output: {img.jpg: [x1, x2, ... x16, y1, y2, ... y16]}
 	"""
-
+	tot_num_points = num_train_pts + num_test_pts
 	x, y = [], []
 	f = open(ANNOTATION_FILE, 'r')
+	print("Loading in data ...")
+	i = 0
 	for line in f:
+		i += 1
+		if(i > 150): break
 		linfo = line.strip().split("\t")
 		image_name = linfo[0]
 		coord = map(float, linfo[1:])
 		im_path = IMAGE_DIR + "/" + image_name
-		img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))
-
+		img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
+		print(img_pixels)
 		x.append(img_pixels)
-		y.append(coord)
+		y.append(list(coord))
 
 
-	tot_num_points = num_train_pts + num_test_pts
+	
 	if(num_test_pts > len(x)):
 		print("Data set does not have " + str(tot_num_points) + " data points.")
 		exit(1)
 
+
+	x, y = np.array(x).astype('float'), np.array(y).astype('float')
 	indices = range(len(x))
 	random.shuffle(indices)
 	train_indices, test_indices = indices[:num_train_pts], indices[num_train_pts:tot_num_points]
@@ -67,31 +73,32 @@ def get_data(num_train_pts, num_test_pts):
 def feedforward_nn():
 	### x_train has dimensions (1000, 640*480*3)
 	### y_train has dimensions (1000, 32)
-	x_train, y_train, x_test, y_test = get_data(1000, 200)
+	x_train, y_train, x_test, y_test = get_data(100, 20)
+	print("x_train", x_train)
 
 	sess = tf.Session()
 	x = tf.placeholder(tf.float32, shape = [None, xdim*ydim*zdim])
 	y_ = tf.placeholder(tf.float32, shape = [None, output_len])
-	W = tf.Variable(tf.zeros[xdim*ydim*zdim, output_len])
-	b = tf.Variable(tf.zeros[output_len])
+	W = tf.Variable(tf.zeros((xdim*ydim*zdim, output_len)))
+	b = tf.Variable(tf.zeros((output_len)))
 	y = tf.nn.softmax(tf.matmul(x,W) + b)
 	cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_*tf.log(y), reduction_indices=[1]))
 
 	LEARNING_RATE = 0.1
-	TRAIN_STEPS = 2500
+	TRAIN_STEPS = 25
 	init = tf.global_variables_initializer()
 	sess.run(init)
 
 	training = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
 
-	correct_predict = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+	correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 	for i in range(TRAIN_STEPS+1):
 	    sess.run(training, feed_dict={x: x_train, y_: y_train})
-	    if i%100 == 0:
+	    if i%2 == 0:
 	        print('Training Step:' + str(i) + '  Accuracy =  ' + str(sess.run(accuracy, feed_dict={x: x_test, y_: y_test})) + '  Loss = ' + str(sess.run(cross_entropy, {x: x_train, y_: y_train})))
-				
+
 
 
 # def load_img(images):
