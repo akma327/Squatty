@@ -3,15 +3,7 @@
 # Date: 05/29/17
 # pose_feedforward_baseline.py
 
-import os 
-import sys
-import numpy as np 
-import tensorflow as tf 
-import glob 
-import ast 
-import random
-import matplotlib.pyplot as plt 
-import matplotlib.image as mpimg
+
 from utils import *
 
 
@@ -24,10 +16,6 @@ USAGE_STR = """
 # python pose_feedforward_baseline.py 
 
 """
-
-IMAGE_DIR = "/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled"
-ANNOTATION_FILE="/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled/joint_annotation_data_scaled.txt"
-
 
 
 def feedforward_nn():
