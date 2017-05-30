@@ -4,7 +4,7 @@ from PIL import Image
 import PIL
 
 def resize_images(data):
-  f = open('../../data/images/joint_annotation_data_scaled.txt', 'w')
+  f = open('../../data/images_scaled/joint_annotation_data_scaled.txt', 'w')
   for i in range(len(data)):
     try:
       line = data[i].split()
@@ -15,12 +15,12 @@ def resize_images(data):
       y = line[len(line) / 2:]
       
       im = Image.open("../../data/images/" + image_name)
-      size = 480, 640
+      size = 640, 480
       im = im.resize(size, PIL.Image.ANTIALIAS)
       im.save("../../data/images_scaled/" + image_name)
 
       newline = [image_name]
-      xdim, ydim, zdim = img.shape
+      ydim, xdim, zdim = img.shape
       for xval in x:
         newline.append(str(float(xval) * size[0] / xdim))
       for yval in y:

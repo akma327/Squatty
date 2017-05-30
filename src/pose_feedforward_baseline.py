@@ -12,6 +12,7 @@ import ast
 import random
 import matplotlib.pyplot as plt 
 import matplotlib.image as mpimg
+from utils import *
 
 
 
@@ -28,52 +29,11 @@ IMAGE_DIR = "/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/ima
 ANNOTATION_FILE="/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled/joint_annotation_data_scaled.txt"
 
 
-xdim, ydim, zdim = 640, 480, 3
-output_len = 32
-
-def get_data(num_train_pts, num_test_pts):
-	"""
-		Parse annotation to map image.jpg file to 1 x 32 vector of all x,y joint coordinates
-		Output: {img.jpg: [x1, x2, ... x16, y1, y2, ... y16]}
-	"""
-	tot_num_points = num_train_pts + num_test_pts
-	x, y = [], []
-	f = open(ANNOTATION_FILE, 'r')
-	print("Loading in data ...")
-	i = 0
-	for line in f:
-		i += 1
-		if(i > 150): break
-		linfo = line.strip().split("\t")
-		image_name = linfo[0]
-		coord = map(float, linfo[1:])
-		im_path = IMAGE_DIR + "/" + image_name
-		img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
-		print(img_pixels)
-		x.append(img_pixels)
-		y.append(list(coord))
-
-
-	
-	if(num_test_pts > len(x)):
-		print("Data set does not have " + str(tot_num_points) + " data points.")
-		exit(1)
-
-
-	x, y = np.array(x).astype('float'), np.array(y).astype('float')
-	indices = range(len(x))
-	random.shuffle(indices)
-	train_indices, test_indices = indices[:num_train_pts], indices[num_train_pts:tot_num_points]
-	x_train, y_train = x[train_indices], y[train_indices]
-	x_test, y_test = x[test_indices], y[test_indices]
-
-	return x_train, y_train, x_test, y_test
-
 
 def feedforward_nn():
 	### x_train has dimensions (1000, 640*480*3)
 	### y_train has dimensions (1000, 32)
-	x_train, y_train, x_test, y_test = get_data(100, 20)
+	x_train, y_train, x_test, y_test = get_data(1000, 200)
 	print("x_train", x_train)
 
 	sess = tf.Session()
@@ -81,59 +41,24 @@ def feedforward_nn():
 	y_ = tf.placeholder(tf.float32, shape = [None, output_len])
 	W = tf.Variable(tf.zeros((xdim*ydim*zdim, output_len)))
 	b = tf.Variable(tf.zeros((output_len)))
-	y = tf.nn.softmax(tf.matmul(x,W) + b)
-	cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_*tf.log(y), reduction_indices=[1]))
+	y = tf.matmul(x,W) + b
+	mse = tf.sqrt(tf.reduce_mean(tf.square(y_ - y)))
 
 	LEARNING_RATE = 0.1
 	TRAIN_STEPS = 25
 	init = tf.global_variables_initializer()
 	sess.run(init)
 
-	training = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
+	training = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(mse)
 
 	correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 	for i in range(TRAIN_STEPS+1):
-	    sess.run(training, feed_dict={x: x_train, y_: y_train})
-	    if i%2 == 0:
-	        print('Training Step:' + str(i) + '  Accuracy =  ' + str(sess.run(accuracy, feed_dict={x: x_test, y_: y_test})) + '  Loss = ' + str(sess.run(cross_entropy, {x: x_train, y_: y_train})))
-
-
-
-# def load_img(images):
-# 	"""
-# 		Most common image size 480 x 640
-# 	"""
-# 	minx, miny = 1000000, 1000000
-# 	img_size = {}
-# 	for i, im in enumerate(images):
-# 		if(i %100 == 0): print(i, len(images))
-# 		if(i > 1000): break
-# 		if(os.path.isfile(im)):
-# 			# if(i > 2): break 
-# 			try:
-# 				img = mpimg.imread(im)
-# 				xdim, ydim, zdim = img.shape
-# 				imsize = (xdim, ydim)
-# 				print(im, xdim, ydim)
-# 				if(imsize not in img_size):
-# 					img_size[imsize] = 0
-# 				img_size[imsize] += 1
-# 				if(xdim < minx): minx = xdim
-# 				if(ydim > miny): miny = ydim
-# 			except:
-# 				print("Invalid file")
-# 	print("Smallest Image: ", xdim, ydim)
-# 	return img_size
-
-
-
-# def driver():
-# 	x,y = get_data()
-# 	img_size = load_img(x)
-# 	print(img_size)
-
+		for j in range(len(x_train)):
+		  sess.run(training, feed_dict={x: x_train[j:j+1], y_: y_train[j:j+1]})
+		  if i%2 == 0:
+				print('Training Step:' + str(i) + '  Accuracy =  ' + str(sess.run(accuracy, feed_dict={x: x_test, y_: y_test})) + '  Loss = ' + str(sess.run(mse, {x: x_train, y_: y_train})))
 
 
 if __name__ == "__main__":
