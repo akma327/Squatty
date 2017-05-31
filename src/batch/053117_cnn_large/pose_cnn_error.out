@@ -1,0 +1,13 @@
+I tensorflow/stream_executor/dso_loader.cc:130] successfully opened CUDA library libcublas.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:130] successfully opened CUDA library libcudnn.so.5.1 locally
+I tensorflow/stream_executor/dso_loader.cc:130] successfully opened CUDA library libcufft.so.8.0 locally
+I tensorflow/stream_executor/dso_loader.cc:130] successfully opened CUDA library libcuda.so.1 locally
+I tensorflow/stream_executor/dso_loader.cc:130] successfully opened CUDA library libcurand.so.8.0 locally
+Traceback (most recent call last):
+  File "pose_cnn.py", line 107, in <module>
+    cnn()
+  File "pose_cnn.py", line 40, in cnn
+    x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 500)
+  File "/scratch/PI/rondror/akma327/classes/CS231A/project/Squatty/src/utils.py", line 31, in get_data
+    f = open(ANNOTATION_FILE, 'r')
+IOError: [Errno 2] No such file or directory: '/home/gusliu/cs231a/data/images_scaled/joint_annotation_data_scaled.txt'

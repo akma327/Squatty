@@ -13,10 +13,16 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-IMAGE_DIR = "/home/gusliu/cs231a/data/images_scaled"
-ANNOTATION_FILE="/home/gusliu/cs231a/data/images_scaled/joint_annotation_data_scaled.txt"
-TRAINING_PLOT_DIR = "/home/gusliu/cs231a/data/plots"
-TEST_PLOT_DIR = "/home/gusliu/cs231a/data/test_plots"
+# IMAGE_DIR = "/home/gusliu/cs231a/data/images_scaled"
+# ANNOTATION_FILE="/home/gusliu/cs231a/data/images_scaled/joint_annotation_data_scaled.txt"
+# TRAINING_PLOT_DIR = "/home/gusliu/cs231a/data/plots"
+# TEST_PLOT_DIR = "/home/gusliu/cs231a/data/test_plots"
+
+# Sherlock akma327
+IMAGE_DIR = "/scratch/PI/rondror/akma327/classes/CS231A/project/data/images_scaled"
+ANNOTATION_FILE="/scratch/PI/rondror/akma327/classes/CS231A/project/data/images_scaled/joint_annotation_data_scaled.txt"
+TRAINING_PLOT_DIR = "/scratch/PI/rondror/akma327/classes/CS231A/project/data/plots"
+TEST_PLOT_DIR = "/scratch/PI/rondror/akma327/classes/CS231A/project/data/test_plots"
 
 xdim, ydim, zdim = 640, 480, 3
 output_len = 32
