@@ -35,6 +35,7 @@ def max_pool_2x2(x):
 
 
 def cnn():
+	saver = tf.train.Saver()
 
 	### Get data
 	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 500)
@@ -99,7 +100,7 @@ def cnn():
 		print('Loss = ' + str(sess.run(mse, feed_dict_test)))
 		predictions = sess.run([y_conv], feed_dict_test)
 		plot_image_and_points(image_paths_test[0], predictions[0][0], i, False)
-
+		save_path = saver.save(sess, "cnn_1000.ckpt")
 
 
 if __name__ == "__main__":
