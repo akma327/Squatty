@@ -37,7 +37,7 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 50)
+	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 500)
 
 
 	### Setup CNN
@@ -84,17 +84,21 @@ def cnn():
 	BATCH_SIZE = 50
 	for i in range(NUM_TRAIN_STEPS):
 		for j in range(0, len(x_train), BATCH_SIZE):
-			batch_x = (x_train[j:j+BATCH_SIZE]).astype(float)
-			batch_y = (y_train[j:j+BATCH_SIZE]).astype(float)
+			batch_x_train = (x_train[j:j+BATCH_SIZE]).astype(float)
+			batch_y_train = (y_train[j:j+BATCH_SIZE]).astype(float)
 
-			feed_dict = {x: batch_x, y_: batch_y, keep_prob: 0.5}
-			sess.run(train_step, feed_dict)
-			print('Loss = ' + str(sess.run(mse, feed_dict)))
+			feed_dict_train = {x: batch_x, y_: batch_y, keep_prob: 0.5}
+			sess.run(train_step, feed_dict_train)
+			print('Loss = ' + str(sess.run(mse, feed_dict_train)))
 			if j == 0:
-				predictions = sess.run([y_conv], feed_dict)
+				predictions = sess.run([y_conv], feed_dict_train)
 				print predictions, predictions[0][0].shape
 				plot_image_and_points(image_paths_train[j], predictions[0][0], i)
 
+		feed_dict_test = {x: test_x, y_: test_y, keep_prob: 1.0}
+		print('Loss = ' + str(sess.run(mse, feed_dict_test)))
+		predictions = sess.run([y_conv], feed_dict_test)
+		plot_image_and_points(image_paths_test[0], predictions[0][0], i, False)
 
 
 

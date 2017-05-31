@@ -15,8 +15,8 @@ import matplotlib.image as mpimg
 
 IMAGE_DIR = "/home/gusliu/cs231a/data/images_scaled"
 ANNOTATION_FILE="/home/gusliu/cs231a/data/images_scaled/joint_annotation_data_scaled.txt"
-PLOT_DIR = "/home/gusliu/cs231a/data/plots"
-
+TRAINING_PLOT_DIR = "/home/gusliu/cs231a/data/plots"
+TEST_PLOT_DIR = "/home/gusliu/cs231a/data/test_plots"
 
 xdim, ydim, zdim = 640, 480, 3
 output_len = 32
@@ -33,7 +33,7 @@ def get_data(num_train_pts, num_test_pts):
 	i = 0
 	for line in f:
 		i += 1
-		if(i > 1500): break
+		if(i > 1510): break
 		linfo = line.strip().split("\t")
 		image_name = linfo[0]
 		coord = map(float, linfo[1:])
@@ -61,13 +61,16 @@ def get_data(num_train_pts, num_test_pts):
 	return x_train, y_train, x_test, y_test, image_paths_train, image_paths_test
 
 
-def plot_image_and_points(img_path, points, iteration):
+def plot_image_and_points(img_path, points, iteration, training=True):
   img = mpimg.imread(img_path)
   x = points[:len(points) / 2]
   y = points[len(points) / 2:]
 
   plt.imshow(img)
   plt.scatter(x, y)
-  plt.savefig(PLOT_DIR + "/" + str(iteration) + ".png")
+  if training:
+  	plt.savefig(TRAINING_PLOT_DIR + "/" + str(iteration) + ".png")
+  else:
+  	plt.savefig(TEST_PLOT_DIR + "/" + str(iteration) + ".png")
   plt.close()
 
