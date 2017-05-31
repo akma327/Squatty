@@ -37,7 +37,7 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(200, 50)
+	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 50)
 
 
 	### Setup CNN
@@ -76,7 +76,7 @@ def cnn():
 
 	### Training
 	mse = tf.sqrt(tf.reduce_mean(tf.square(y_ - y_conv)))
-	train_step = tf.train.AdamOptimizer(1e-2).minimize(mse)
+	train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 	sess = tf.InteractiveSession()
 	sess.run(tf.global_variables_initializer())
 
@@ -88,6 +88,7 @@ def cnn():
 			batch_y = (y_train[j:j+BATCH_SIZE]).astype(float)
 
 			feed_dict = {x: batch_x, y_: batch_y, keep_prob: 0.5}
+			sess.run(train_step, feed_dict)
 			print('Loss = ' + str(sess.run(mse, feed_dict)))
 			if j == 0:
 				predictions = sess.run([y_conv], feed_dict)

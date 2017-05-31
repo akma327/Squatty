@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 
-IMAGE_DIR = "/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled"
-ANNOTATION_FILE="/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/images_scaled/joint_annotation_data_scaled.txt"
-PLOT_DIR = "/afs/ir.stanford.edu/users/g/u/gusliu/cs231a/final_project/data/plots"
+IMAGE_DIR = "/home/gusliu/cs231a/data/images_scaled"
+ANNOTATION_FILE="/home/gusliu/cs231a/data/images_scaled/joint_annotation_data_scaled.txt"
+PLOT_DIR = "/home/gusliu/cs231a/data/plots"
 
 
 xdim, ydim, zdim = 640, 480, 3
@@ -33,7 +33,7 @@ def get_data(num_train_pts, num_test_pts):
 	i = 0
 	for line in f:
 		i += 1
-		if(i > 150): break
+		if(i > 1500): break
 		linfo = line.strip().split("\t")
 		image_name = linfo[0]
 		coord = map(float, linfo[1:])
