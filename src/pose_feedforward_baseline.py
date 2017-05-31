@@ -21,7 +21,7 @@ USAGE_STR = """
 def feedforward_nn():
 	### x_train has dimensions (1000, 640*480*3)
 	### y_train has dimensions (1000, 32)
-	x_train, y_train, x_test, y_test = get_data(1000, 200)
+	x_train, y_train, x_test, y_test, _, _ = get_data(1000, 200)
 	print("x_train", x_train)
 
 	sess = tf.Session()

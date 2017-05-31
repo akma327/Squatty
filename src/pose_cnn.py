@@ -37,7 +37,7 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test = get_data(100, 20)
+	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(100, 20)
 
 
 	### Setup CNN
@@ -45,7 +45,7 @@ def cnn():
 	x = tf.placeholder(tf.float32, shape=[None, xdim*ydim*zdim])
 	y_ = tf.placeholder(tf.float32, shape=[None, output_len])
 
-	W_conv1 = weight_variable([5,5,1, num_filters1])
+	W_conv1 = weight_variable([5,5,zdim, num_filters1])
 	b_conv1 = bias_variable([num_filters1])
 
 	x_image = tf.reshape(x, [-1, xdim, ydim, zdim])
@@ -75,20 +75,24 @@ def cnn():
 
 
 	### Training
-	mse = tf.sqrt(tf.reduce_mean(tf.square(y_ - y)))
-	train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
+	mse = tf.sqrt(tf.reduce_mean(tf.square(y_ - y_conv)))
+	train_step = tf.train.AdamOptimizer(1e-2).minimize(mse)
+	sess = tf.InteractiveSession()
 	sess.run(tf.global_variables_initializer())
 
-	NUM_TRAIN_STEPS = 20000
+	NUM_TRAIN_STEPS = 1000
 	BATCH_SIZE = 50
 	for i in range(NUM_TRAIN_STEPS):
 		for j in range(0, len(x_train), BATCH_SIZE):
-			batch_x = x_train[j:j+BATCH_SIZE]
-			batch_y = y_train[j:j+BATCH_SIZE]
+			batch_x = (x_train[j:j+BATCH_SIZE]).astype(float)
+			batch_y = (y_train[j:j+BATCH_SIZE]).astype(float)
 
-			print('Loss = ' + str(sess.run(mse, {x: batch_x, y_: batch_y})))
-
-
+			feed_dict = {x: batch_x, y_: batch_y, keep_prob: 0.5}
+			print('Loss = ' + str(sess.run(mse, feed_dict)))
+			if j == 0:
+				predictions = sess.run([y_conv], feed_dict)
+				print predictions, predictions[0][0].shape
+				plot_image_and_points(image_paths_train[j], predictions[0][0], i)
 
 
 
