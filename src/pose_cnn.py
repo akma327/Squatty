@@ -86,14 +86,20 @@ def cnn():
 	sess.run(tf.global_variables_initializer())
 
 	NUM_TRAIN_STEPS = 1000
-	BATCH_SIZE = 100
+	BATCH_SIZE = 25
 	#saver = tf.train.Saver()
 	for i in range(NUM_TRAIN_STEPS):
 		print("Epoch: " + str(i))
+		batch_x_test = []
+		for m in range(0, len(image_paths_test), BATCH_SIZE):
+			for test_im in image_paths_test[m:m+BATCH_SIZE]:
+				im_path = IMAGE_DIR + "/" + test_im
+				img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
+				batch_x_test.append(img_pixels)
 		for j in range(0, len(image_paths_train), BATCH_SIZE):
 			batch_x_train = []
 			for train_im in image_paths_train[j: j+BATCH_SIZE]:
-				im_path = IMAGE_DR + "/" + image_name 
+				im_path = IMAGE_DIR + "/" + train_im 
 				img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
 				batch_x_train.append(img_pixels)
 
@@ -101,7 +107,7 @@ def cnn():
 			# batch_x_train = (x_train[j:j+BATCH_SIZE]).astype(float)
 			batch_y_train = (y_train[j:j+BATCH_SIZE]).astype(float)
 
-			print("test", batch_x_train, batch_y_train)
+			#print("test", batch_x_train, batch_y_train)
 
 			feed_dict_train = {x: batch_x_train, y_: batch_y_train, keep_prob: 0.5}
 			sess.run(train_step, feed_dict_train)
@@ -109,13 +115,13 @@ def cnn():
 			if j == 0:
 				predictions = sess.run([y_conv], feed_dict_train)
 				print predictions, predictions[0][0].shape
-				plot_image_and_points(image_paths_train[j], predictions[0][0], i, 0)
+				plot_image_and_points(IMAGE_DIR + "/" + image_paths_train[j], predictions[0][0], i, 0)
 
 		feed_dict_test = {x: x_test[:BATCH_SIZE], y_: y_test[:BATCH_SIZE], keep_prob: 1.0}
 		print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
 		predictions = sess.run([y_conv], feed_dict_test)
 		for k in range(10):
-			plot_image_and_points(image_paths_test[k], predictions[0][k], i, k, False)
+			plot_image_and_points(IMAGE_DIR + "/" + image_paths_test[k], predictions[0][k], i, k, False)
 		#save_path = saver.save(sess, "cnn_1000.ckpt")
 
 
