@@ -13,7 +13,7 @@ output_len = 32
 num_filters1 = 16
 num_filters2 = 32
 
-fc_size = 1024
+fc_size = 512
 
 
 def weight_variable(shape, name):
@@ -37,8 +37,7 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 200)
-
+	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(600, 300)
 
 	### Setup CNN
 
@@ -81,8 +80,8 @@ def cnn():
 	sess.run(tf.global_variables_initializer())
 
 	NUM_TRAIN_STEPS = 1000
-	BATCH_SIZE = 50
-	saver = tf.train.Saver()
+	BATCH_SIZE = 25
+	#saver = tf.train.Saver()
 	for i in range(NUM_TRAIN_STEPS):
 		for j in range(0, len(x_train), BATCH_SIZE):
 			batch_x_train = (x_train[j:j+BATCH_SIZE]).astype(float)
@@ -94,13 +93,14 @@ def cnn():
 			if j == 0:
 				predictions = sess.run([y_conv], feed_dict_train)
 				print predictions, predictions[0][0].shape
-				plot_image_and_points(image_paths_train[j], predictions[0][0], i)
+				plot_image_and_points(image_paths_train[j], predictions[0][0], i, 0)
 
-		feed_dict_test = {x: x_test, y_: y_test, keep_prob: 1.0}
+		feed_dict_test = {x: x_test[:BATCH_SIZE], y_: y_test[:BATCH_SIZE], keep_prob: 1.0}
 		print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
 		predictions = sess.run([y_conv], feed_dict_test)
-		plot_image_and_points(image_paths_test[0], predictions[0][0], i, False)
-		save_path = saver.save(sess, "cnn_5000.ckpt")
+		for k in range(10):
+			plot_image_and_points(image_paths_test[k], predictions[0][k], i, k, False)
+		#save_path = saver.save(sess, "cnn_1000.ckpt")
 
 
 if __name__ == "__main__":

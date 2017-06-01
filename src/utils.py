@@ -39,7 +39,7 @@ def get_data(num_train_pts, num_test_pts):
 	i = 0
 	for line in f:
 		i += 1
-		if(i > 6100): break
+		if(i > 910): break
 		linfo = line.strip().split("\t")
 		image_name = linfo[0]
 		coord = map(float, linfo[1:])
@@ -67,7 +67,7 @@ def get_data(num_train_pts, num_test_pts):
 	return x_train, y_train, x_test, y_test, image_paths_train, image_paths_test
 
 
-def plot_image_and_points(img_path, points, iteration, training=True):
+def plot_image_and_points(img_path, points, iteration, imgno, training=True):
   img = mpimg.imread(img_path)
   x = points[:len(points) / 2]
   y = points[len(points) / 2:]
@@ -75,8 +75,8 @@ def plot_image_and_points(img_path, points, iteration, training=True):
   plt.imshow(img)
   plt.scatter(x, y)
   if training:
-  	plt.savefig(TRAINING_PLOT_DIR + "/" + str(iteration) + ".png")
+  	plt.savefig(TRAINING_PLOT_DIR + "/" + str(imgno) + "_" + str(iteration) + ".png")
   else:
-  	plt.savefig(TEST_PLOT_DIR + "/" + str(iteration) + ".png")
+  	plt.savefig(TEST_PLOT_DIR + "/" + str(imgno) + "_" + str(iteration) + ".png")
   plt.close()
 
