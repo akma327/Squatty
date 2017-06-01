@@ -37,10 +37,15 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(600, 300)
+	# x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(600, 300)
+
+	print("Loading in training and testing annotations")
+	image_paths_train, y_train = get_data(TRAIN_ANNOTATION_FILE)
+	image_paths_test, y_test = get_data(TEST_ANNOTATION_FILE)
+	
 
 	### Setup CNN
-
+	print("Setting up CNN architecture ...")
 	x = tf.placeholder(tf.float32, shape=[None, xdim*ydim*zdim])
 	y_ = tf.placeholder(tf.float32, shape=[None, output_len])
 
@@ -74,18 +79,29 @@ def cnn():
 
 
 	### Training
+	print("Begin training ...")
 	mse = tf.sqrt(tf.reduce_mean(tf.square(y_ - y_conv)))
 	train_step = tf.train.AdamOptimizer(1e-4).minimize(mse)
 	sess = tf.InteractiveSession()
 	sess.run(tf.global_variables_initializer())
 
 	NUM_TRAIN_STEPS = 1000
-	BATCH_SIZE = 25
+	BATCH_SIZE = 100
 	#saver = tf.train.Saver()
 	for i in range(NUM_TRAIN_STEPS):
-		for j in range(0, len(x_train), BATCH_SIZE):
-			batch_x_train = (x_train[j:j+BATCH_SIZE]).astype(float)
+		print("Epoch: " + str(i))
+		for j in range(0, len(image_paths_train), BATCH_SIZE):
+			batch_x_train = []
+			for train_im in image_paths_train[j: j+BATCH_SIZE]:
+				im_path = IMAGE_DR + "/" + image_name 
+				img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
+				batch_x_train.append(img_pixels)
+
+			batch_x_train = np.array(batch_x_train).astype(float)
+			# batch_x_train = (x_train[j:j+BATCH_SIZE]).astype(float)
 			batch_y_train = (y_train[j:j+BATCH_SIZE]).astype(float)
+
+			print("test", batch_x_train, batch_y_train)
 
 			feed_dict_train = {x: batch_x_train, y_: batch_y_train, keep_prob: 0.5}
 			sess.run(train_step, feed_dict_train)
