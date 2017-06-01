@@ -90,12 +90,7 @@ def cnn():
 	#saver = tf.train.Saver()
 	for i in range(NUM_TRAIN_STEPS):
 		print("Epoch: " + str(i))
-		batch_x_test = []
-		for m in range(0, len(image_paths_test), BATCH_SIZE):
-			for test_im in image_paths_test[m:m+BATCH_SIZE]:
-				im_path = IMAGE_DIR + "/" + test_im
-				img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
-				batch_x_test.append(img_pixels)
+
 		for j in range(0, len(image_paths_train), BATCH_SIZE):
 			batch_x_train = []
 			for train_im in image_paths_train[j: j+BATCH_SIZE]:
@@ -117,11 +112,34 @@ def cnn():
 				print predictions, predictions[0][0].shape
 				plot_image_and_points(IMAGE_DIR + "/" + image_paths_train[j], predictions[0][0], i, 0)
 
-		feed_dict_test = {x: x_test[:BATCH_SIZE], y_: y_test[:BATCH_SIZE], keep_prob: 1.0}
-		print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
-		predictions = sess.run([y_conv], feed_dict_test)
-		for k in range(10):
-			plot_image_and_points(IMAGE_DIR + "/" + image_paths_test[k], predictions[0][k], i, k, False)
+		### Testing 
+		
+		testing_losses = []
+		for m in range(0, len(image_paths_test), BATCH_SIZE):
+			batch_x_test = []
+			for test_im in image_paths_test[m:m+BATCH_SIZE]:
+				im_path = IMAGE_DIR + "/" + test_im
+				img_pixels = mpimg.imread(im_path).reshape((1, xdim*ydim*zdim))[0]
+				batch_x_test.append(img_pixels)
+
+			batch_x_test = np.array(batch_x_test).astype(float)
+			batch_y_test = (y_test[m: m+BATCH_SIZE])
+			feed_dict_test = {x:batch_x_test, y_:batch_y_test, keep_prob:1.0}
+			testing_losses.append(sess.run(mse, feed_dict_test))
+			if(m == 0):
+				predictions = sess.run([y_conv], feed_dict_test)
+				for k in range(10):
+					plot_image_and_points(IMAGE_DIR + "/" + image_paths_test[m*BATCH_SIZE + k], predictions[0][k], i, k, False)
+					
+
+		# test_loss = sum(testing_losses)/len(testing_losses)
+		# print('Test Loss = ' + str(test_loss))
+
+		# feed_dict_test = {x: x_test[:BATCH_SIZE], y_: y_test[:BATCH_SIZE], keep_prob: 1.0}
+		# print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
+		# predictions = sess.run([y_conv], feed_dict_test)
+		# for k in range(10):
+		# 	plot_image_and_points(IMAGE_DIR + "/" + image_paths_test[k], predictions[0][k], i, k, False)
 		#save_path = saver.save(sess, "cnn_1000.ckpt")
 
 
