@@ -21,7 +21,7 @@ def weight_variable(shape, name):
 	return initial
 
 def bias_variable(shape, name):
-	initial = tf.get_variable(name, shape=shape, initializer=tf.zeros_initializer())
+	initial = tf.get_variable(name, shape=shape, initializer=tf.contrib.layers.xavier_initializer())
 	return initial
 
 def conv2d(x,W):
@@ -37,7 +37,7 @@ def max_pool_2x2(x):
 def cnn():
 
 	### Get data
-	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 500)
+	x_train, y_train, x_test, y_test, image_paths_train, image_paths_test = get_data(1000, 200)
 
 
 	### Setup CNN
@@ -100,7 +100,7 @@ def cnn():
 		print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
 		predictions = sess.run([y_conv], feed_dict_test)
 		plot_image_and_points(image_paths_test[0], predictions[0][0], i, False)
-		save_path = saver.save(sess, "cnn_1000.ckpt")
+		save_path = saver.save(sess, "cnn_5000.ckpt")
 
 
 if __name__ == "__main__":

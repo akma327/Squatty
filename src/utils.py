@@ -39,7 +39,7 @@ def get_data(num_train_pts, num_test_pts):
 	i = 0
 	for line in f:
 		i += 1
-		if(i > 1510): break
+		if(i > 6100): break
 		linfo = line.strip().split("\t")
 		image_name = linfo[0]
 		coord = map(float, linfo[1:])
