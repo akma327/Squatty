@@ -99,3 +99,16 @@ def plot_image_and_points(img_path, points, iteration, imgno, training=True):
   	plt.savefig(TEST_PLOT_DIR + "/" + str(imgno) + "_" + str(iteration) + ".png")
   plt.close()
 
+
+def plot_error(losses, training=True):
+  plt.plot(losses)
+  plt.xlabel("Epoch")
+  plt.ylabel("RMSE")
+  if training:
+    plt.title("Training RMSE Over Epochs") 
+    plt.savefig(TRAINING_PLOT_DIR + "/error" + str(len(losses)) + ".png")
+  else:
+    plt.title("Test RMSE Over Epochs")
+    plt.savefig(TEST_PLOT_DIR + "/error" + str(len(losses)) + ".png")
+  plt.close()
+

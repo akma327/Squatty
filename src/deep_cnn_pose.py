@@ -107,10 +107,12 @@ def cnn():
 
 	NUM_TRAIN_STEPS = 1000
 	BATCH_SIZE = 25
+	total_testing_losses = []
+	total_training_losses = []
 	#saver = tf.train.Saver()
 	for i in range(NUM_TRAIN_STEPS):
 		print("Epoch: " + str(i))
-
+		training_loss = 0
 		for j in range(0, len(image_paths_train), BATCH_SIZE):
 			batch_x_train = []
 			for train_im in image_paths_train[j: j+BATCH_SIZE]:
@@ -126,12 +128,15 @@ def cnn():
 
 			feed_dict_train = {x: batch_x_train, y_: batch_y_train, keep_prob: 0.5}
 			sess.run(train_step, feed_dict_train)
-			print('Training loss = ' + str(sess.run(mse, feed_dict_train)))
+			training_loss = str(sess.run(mse, feed_dict_train))
+			print('Training loss = ' + training_loss)
 			if j == 0:
 				predictions = sess.run([y_conv], feed_dict_train)
 				print predictions, predictions[0][0].shape
 				plot_image_and_points(IMAGE_DIR + "/" + image_paths_train[j], predictions[0][0], i, 0)
-
+	
+		total_training_losses.append(training_loss)
+		plot_error(training_loss)
 		### Testing 
 		
 		testing_losses = []
@@ -152,8 +157,10 @@ def cnn():
 					plot_image_and_points(IMAGE_DIR + "/" + image_paths_test[m*BATCH_SIZE + k], predictions[0][k], i, k, False)
 					
 
-		# test_loss = sum(testing_losses)/len(testing_losses)
-		# print('Test Loss = ' + str(test_loss))
+		test_loss = sum(testing_losses)/len(testing_losses)
+		print('Test Loss = ' + str(test_loss))
+		total_testing_losses.append(test_loss)
+		plot_error(test_loss, False)
 
 		# feed_dict_test = {x: x_test[:BATCH_SIZE], y_: y_test[:BATCH_SIZE], keep_prob: 1.0}
 		# print('Test loss = ' + str(sess.run(mse, feed_dict_test)))
